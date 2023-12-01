@@ -48,7 +48,7 @@ def buscar_info(request, operation, info = ""):
                        info_del_servicio[int(r[0])] = [int(r[1]), int(r[2])]
                 print(info_del_servicio)
                 resultados = Servicio.objects.filter(pk__in = [j for j in info_del_servicio.keys()]).order_by("pk")
-            resultados = zip(resultados, dict(sorted(info_del_servicio.items())))
+            #resultados = zip(resultados, dict(sorted(info_del_servicio.items())))
             info_web['titulo'] = 'Lista de servicios'
         case 'unidades':
             resultados = UnidadTransporte.objects.all().order_by("pk")
