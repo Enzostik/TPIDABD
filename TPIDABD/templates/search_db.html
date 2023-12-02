@@ -7,12 +7,21 @@
 {% block content %}
 <h1>{{info_web.titulo}}</h1>
 {%if info_web.es_servicio%}
-    {% for d, t in data %}
-        <p> Servicio de viaje (id: {{d.pk}})
-            Fecha de salida : {{d.fecha_partida}}
-            <a href={% url 'hacer_reserva' d.pk 'asdasd' %}> Reservar ahora </a>
-        </p>
-    {% endfor %}
+    {% if info_web.filtered %}
+        {% for d, t in data %}
+            <p> Servicio de viaje (id: {{d.pk}})
+                Fecha de salida : {{d.fecha_partida}}
+                <a href={% url 'hacer_reserva' d.pk t %}> Reservar ahora </a>
+            </p>
+        {% endfor %}
+    {% else %}
+        {% for d in data %}
+            <p> Servicio de viaje (id: {{d.pk}})
+                Fecha de salida : {{d.fecha_partida}}
+                <a href={% url 'hacer_reserva' d.pk "all" %}> Reservar ahora </a>
+            </p>
+        {% endfor %}
+    {% endif %}
 {% else %}
     {% for d in data %}
         <p> Vehículo (id: {{d.pk}})

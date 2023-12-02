@@ -34,7 +34,7 @@ class Perfil(models.Model):
 
 #Modelos de la base de datos
 class Localidad(models.Model):
-    id_localidad = models.AutoField(auto_created=True, primary_key=True)
+    id_localidad = models.AutoField(auto_created=True, primary_key=True, db_column='id_localidad')
     pais = models.CharField(max_length=20)
     provincia = models.CharField(max_length=80)
     nombre = models.CharField(max_length=20)
@@ -68,9 +68,9 @@ class UnidadTransporte(models.Model):
 
 class Parada(models.Model):
     nro_parada = models.AutoField(auto_created=True, primary_key=True)
-    id_itinerario = models.ForeignKey(Itinerario, on_delete=models.CASCADE)
+    id_itinerario = models.ForeignKey('Itinerario', on_delete=models.CASCADE, db_column='id_itinerario')
     tiempo_llegada = models.DurationField()
-    id_localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE)
+    id_localidad = models.ForeignKey('Localidad', on_delete=models.CASCADE, db_column='id_localidad')
 
     class Meta:
         managed = False
@@ -80,8 +80,8 @@ class Parada(models.Model):
 class Servicio(models.Model):
     id_servicio = models.AutoField(auto_created=True, primary_key=True)
     atencion = models.CharField(max_length=30, choices=Atencion.choices, default=Atencion.COMUN)
-    fecha_partida = models.DateField()
-    fecha_llegada = models.DateField()
+    fecha_partida = models.DateTimeField()
+    fecha_llegada = models.DateTimeField()
     disponibilidad = models.IntegerField()
     diferencial_precio = models.FloatField()
     creador = models.ForeignKey(Perfil, on_delete=models.CASCADE, db_column='creador', blank=True, null=True)
@@ -93,7 +93,8 @@ class Servicio(models.Model):
         db_table = 'servicio'
 
 class Disposicion(models.Model):
-    id_unidad = models.OneToOneField('UnidadTransporte', on_delete=models.CASCADE, db_column='id_unidad', primary_key=True)
+    id_disposicion = models.AutoField(auto_created=True, primary_key=True)
+    id_unidad = models.OneToOneField('UnidadTransporte', on_delete=models.CASCADE, db_column='id_unidad')
     fila = models.IntegerField()
     hilera = models.IntegerField()
     piso = models.IntegerField() #TODO: cambiar cant_pisos a Int en la base de datos
@@ -130,13 +131,10 @@ class Pasaje(models.Model):
         db_table = 'pasaje'
 
 class AsientoReservado(models.Model):
-    id_reserva = models.OneToOneField(Reserva, on_delete=models.CASCADE, db_column='id_reserva', primary_key=True)
-    id_unidad = models.ForeignKey('Disposicion', on_delete=models.CASCADE, db_column='id_unidad')
-    piso = models.IntegerField()  # This field type is a guess.
-    fila = models.SmallIntegerField()
-    hilera = models.SmallIntegerField()
+    id_reserva = models.OneToOneField('Reserva', on_delete=models.CASCADE, db_column='id_reserva', primary_key=True)
+    id_disposicion = models.ForeignKey('Disposicion', on_delete=models.CASCADE, db_column='id_disposicion')
 
     class Meta:
         managed = False
         db_table = 'asientos_reservados'
-        unique_together = (('id_reserva', 'id_unidad', 'piso', 'fila', 'hilera'),)
+        unique_together = (('id_reserva', 'id_disposicion'),)
